@@ -26,7 +26,7 @@ WordPress Starter Theme built with Bootstrap.
 ## Compatible with CSS Preprocessors
 You can use [SASS](http://sass-lang.com) to create your main stylesheet which includes all the required styles.
 
-**`/assets/main.scss`** needs to be compiled as **`/assets/css/main.min.css`**
+**`/assets/sass/app.scss`** needs to be compiled as **`/assets/build/app.min.css`**
 
 
 ## Grunt Task Automation
@@ -39,7 +39,7 @@ This Theme comes with a built in Task Automation. SASS files will be complied if
 * `$ npm install`
 * Run the **`watch`** script
 * `$ npm run watch`
-* Modify `/main.scss` and `/js/main.js`
+* Modify `/app.scss` and `/js/app.js`
 
 
 ## Add-ons Plugin Included
