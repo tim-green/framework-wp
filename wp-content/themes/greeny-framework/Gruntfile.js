@@ -1,115 +1,89 @@
-const sass = require('node-sass');
-const postcss = require('postcss');
+'use strict';
+module.exports = function(grunt) {
 
-module.exports = function (grunt) {
-	'use strict';
-	
-	// load all Grunt tasks matching the `grunt-*` pattern
-	require('load-grunt-tasks')(grunt);
+  grunt.initConfig({
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc'
+      },
+      all: [
+        'Gruntfile.js',
+        'assets/js/**/*.js',
+        '!assets/build/app.min.js'
+      ]
+    },
+    sass: {
+      dist: {
+        options: {
+          style: 'compressed',
+          compass: false,
+          sourcemap: false
+        },
+        files: {
+          'assets/build/app.min.css': [
+              'assets/sass/app.scss'
+          ]
+        }
+      }
+    },
+    uglify: {
+      dist: {
+        files: {
+          'assets/build/app.min.js': [
+            'assets/js/app.js'
+          ]
+        },
+        options: {
+          sourceMap: 'assets/build/app.min.js.map',
+          sourceMappingURL: '/assets/build/app.min.js.map'
+        }
+      }
+    },
+    watch: {
+      options: {
+        livereload: true
+      },
+      sass: {
+        files: [
+          'assets/sass/**/*.scss'
+        ],
+        tasks: ['sass']
+      },
+      js: {
+        files: [
+          'assets/js/**/*.js'
+        ],
+        tasks: ['jshint', 'uglify']
+      },
+      html: {
+        files: [
+          '**/*.html'
+        ]
+      }
+    },
+    clean: {
+      dist: [
+        'assets/build/app.min.css',
+        'assets/build/app.min.js'
+      ]
+    }
+  });
 
-	grunt.initConfig({
-		
-		pkg: grunt.file.readJSON('package.json'),
+  // Load tasks
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-sass');
 
-		// watch for changes and trigger tasks
-		watch: {
-			sass: {
-				files: ['*.{scss,sass}'],
-				tasks: ['sass', 'postcss']
-			},
-			images: {
-				files: ['img/*.{png,jpg,gif}'],
-				tasks: ['imagemin']
-			},
-			js: {
-				files: '<%= jshint.all %>',
-				tasks: ['jshint', 'uglify']
-			},
-			options: {
-				//livereload: true // Install and enable a Browser Plugin first: http://livereload.com/extensions
-			}
-		},
-
-		// Sass
-		sass: {
-			options: {
-				implementation: sass,
-				sourceMap: true
-			},
-			dist: {
-				files: {
-					'css/main.min.css': 'main.scss',
-					//'css/editor-style.min.css': 'editor-style.scss'
-				}
-			}
-		},
-
-		// PostCSS: Source maps, Autoprefix, Minify
-		postcss: {
-			options: {
-				map: {
-					inline: false, // Save all Source maps as separate files...
-					annotation: 'css/' // ...to the specified directory
-				},
-				processors: [
-					require('pixrem')(), // Add fallbacks for rem units
-					require('autoprefixer')({ browsers: 'last 2 versions' }), // Add vendor prefixes
-					require('cssnano')() // Minify the result
-				]
-			},
-			dist: {
-				src: 'css/*.min.css'
-			}
-		},
-		
-		// Image optimization
-		imagemin: {
-			dist: {
-				options: {
-					optimizationLevel: 7,
-					progressive: true,
-					interlaced: true
-				},
-				files: [{
-					expand: true,
-					cwd: 'img/',
-					src: ['*.{png,jpg,gif}'],
-					dest: 'img/'
-				}]
-			}
-		},
-		
-		// Javascript linting with jshint
-		jshint: {
-			all: [
-				//'Gruntfile.js',
-				'js/*.js',
-				'!js/*.min.js'
-			]
-		},
-		
-		// Uglify to concat, minify, and make Source maps
-		uglify: {
-			main: {
-				options: {
-					sourceMap: 'js/main.js.map',
-					sourceMappingURL: 'main.js.map',
-					sourceMapPrefix: 2
-				},
-				files: {
-					'js/main.min.js': [
-						'js/main.js'
-					]
-				}
-			}
-		},
-
-	});
-
-	// Set base directory to "/assets": https://gruntjs.com/api/grunt.file#grunt.file.setbase
-	grunt.file.setBase('assets');
-	
-	// Register the tasks
-	grunt.registerTask('default', ['watch', 'sass', 'postcss', 'imagemin', 'uglify']);
+  // Register tasks
+  grunt.registerTask('default', [
+    'clean',
+    'sass',
+    'uglify'
+  ]);
+  grunt.registerTask('dev', [
+    'watch'
+  ]);
 
 };
